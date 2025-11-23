@@ -105,26 +105,156 @@ export interface ProviderConfig {
 }
 
 /**
- * Generation options
+ * Hooks for customizing generation behavior
  */
-export interface GenerateOptions {
-  count: number; // Number of records to generate
-  provider: ProviderConfig;
-  seed?: number; // Random seed for reproducibility
-  batchSize?: number; // Batch size for LLM calls (default: 10)
-  onProgress?: (progress: number, total: number) => void;
+export interface GenerationHooks {
+  /** Called before generating a record */
+  beforeRecord?: (index: number, context: GenerationContext) => void | Promise<void>;
+  
+  /** Called after generating a record */
+  afterRecord?: (record: Record<string, any>, index: number, context: GenerationContext) => Record<string, any> | Promise<Record<string, any>>;
+  
+  /** Called before generating a field */
+  beforeField?: (fieldName: string, field: Field, context: GenerationContext) => void | Promise<void>;
+  
+  /** Called after generating a field */
+  afterField?: (fieldName: string, value: any, field: Field, context: GenerationContext) => any | Promise<any>;
+  
+  /** Called when an error occurs during generation */
+  onError?: (error: Error, context: GenerationContext & { fieldName?: string }) => void | Promise<void>;
+  
+  /** Called when generation starts */
+  onStart?: (options: GenerateOptions) => void | Promise<void>;
+  
+  /** Called when generation completes */
+  onComplete?: (result: GenerationResult<any>) => void | Promise<void>;
 }
 
 /**
- * Generation result
+ * Transformation functions for post-processing
+ */
+export interface Transformations {
+  /** Transform entire record after generation */
+  transformRecord?: (record: Record<string, any>, index: number) => Record<string, any> | Promise<Record<string, any>>;
+  
+  /** Transform specific field value */
+  transformField?: (fieldName: string, value: any, record: Record<string, any>) => any | Promise<any>;
+  
+  /** Filter records - return false to exclude */
+  filterRecord?: (record: Record<string, any>, index: number) => boolean | Promise<boolean>;
+}
+
+/**
+ * Validation functions
+ */
+export interface Validations {
+  /** Validate entire record - throw or return false to reject */
+  validateRecord?: (record: Record<string, any>, index: number) => boolean | Promise<boolean> | void | Promise<void>;
+  
+  /** Validate specific field value - throw or return false to reject */
+  validateField?: (fieldName: string, value: any, record: Record<string, any>) => boolean | Promise<boolean> | void | Promise<void>;
+}
+
+/**
+ * Advanced generation options
+ */
+export interface AdvancedOptions {
+  /** Maximum retries for failed LLM calls */
+  maxRetries?: number;
+  
+  /** Timeout for LLM calls in milliseconds */
+  timeout?: number;
+  
+  /** Concurrency limit for parallel LLM calls */
+  concurrency?: number;
+  
+  /** Stop generation on first error (default: false, continues) */
+  stopOnError?: boolean;
+  
+  /** Continue generation even if some fields fail (default: true) */
+  continueOnFieldError?: boolean;
+  
+  /** Custom error handler */
+  errorHandler?: (error: Error, context: any) => any | Promise<any>;
+}
+
+/**
+ * Generation options - Extremely configurable and programmatic
+ */
+export interface GenerateOptions {
+  /** Number of records to generate */
+  count: number;
+  
+  /** LLM provider configuration */
+  provider: ProviderConfig;
+  
+  /** Random seed for reproducibility */
+  seed?: number;
+  
+  /** Batch size for LLM calls (default: 1, sequential) */
+  batchSize?: number;
+  
+  /** Progress callback */
+  onProgress?: (progress: number, total: number) => void;
+  
+  /** Hooks for customizing generation behavior */
+  hooks?: GenerationHooks;
+  
+  /** Transformations for post-processing */
+  transformations?: Transformations;
+  
+  /** Validations for data quality */
+  validations?: Validations;
+  
+  /** Advanced options */
+  advanced?: AdvancedOptions;
+}
+
+/**
+ * Generation statistics
+ */
+export interface GenerationStats {
+  totalRecords: number;
+  llmCalls: number;
+  duration: number; // milliseconds
+  provider: string;
+  model: string;
+  errors?: number;
+  retries?: number;
+  filtered?: number;
+  cacheHits?: number;
+  cacheHitRate?: number;
+}
+
+/**
+ * Generation result - Rich metadata for programmatic use
  */
 export interface GenerationResult<T extends Schema> {
+  /** Generated records */
   data: Record<keyof T, any>[];
-  stats: {
-    totalRecords: number;
-    llmCalls: number;
-    duration: number; // milliseconds
-    provider: string;
-    model: string;
+  
+  /** Generation statistics */
+  stats: GenerationStats;
+  
+  /** Errors encountered during generation (if any) */
+  errors?: Array<{
+    recordIndex?: number;
+    fieldName?: string;
+    error: Error;
+    timestamp: number;
+  }>;
+  
+  /** Metadata about the generation run */
+  metadata?: {
+    schema: string[]; // Field names
+    startTime: number;
+    endTime: number;
+    options: Partial<GenerateOptions>;
+    costEstimate?: {
+      cost: number;
+      totalTokens: number;
+      estimatedTime: number;
+      recordsPerSecond: number;
+    };
   };
 }

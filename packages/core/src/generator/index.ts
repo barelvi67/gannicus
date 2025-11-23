@@ -14,6 +14,9 @@ import type {
 } from '../types/index.ts';
 import { validateSchema } from '../schema/index.ts';
 import { createOllamaProvider } from '../providers/index.ts';
+import { cache } from '../cache/index.ts';
+import { generateWithBatching, flushBatches } from './batch-processor.ts';
+import { estimateCost } from '../cost/index.ts';
 
 /**
  * Generate synthetic data from schema
@@ -31,6 +34,14 @@ export async function generate<T extends Schema>(
   options: GenerateOptions
 ): Promise<GenerationResult<T>> {
   const startTime = Date.now();
+  const errors: GenerationResult<T>['errors'] = [];
+  let retries = 0;
+  let filtered = 0;
+
+  // Call onStart hook
+  if (options.hooks?.onStart) {
+    await options.hooks.onStart(options);
+  }
 
   // Validate schema
   validateSchema(schema);
@@ -45,64 +56,265 @@ export async function generate<T extends Schema>(
 
   // Initialize stats
   let llmCallCount = 0;
+  let cacheHits = 0;
 
   // Analyze schema and build generation plan
   const plan = buildGenerationPlan(schema);
 
   // Generate records
   const data: Record<string, any>[] = [];
+  const advanced = options.advanced || {};
+  const stopOnError = advanced.stopOnError ?? false;
+  const continueOnFieldError = advanced.continueOnFieldError ?? true;
 
   for (let i = 0; i < options.count; i++) {
-    const record: Record<string, any> = {};
+    try {
+      const context: GenerationContext = {
+        schema,
+        generatedFields: {},
+        recordIndex: i,
+      };
 
-    // Report progress
-    if (options.onProgress) {
-      options.onProgress(i + 1, options.count);
-    }
-
-    // Execute generation plan in order
-    for (const fieldName of plan.order) {
-      const field = schema[fieldName];
-
-      switch (field.type) {
-        case 'static':
-          record[fieldName] = field.value;
-          break;
-
-        case 'number':
-          record[fieldName] = generateNumber(field);
-          break;
-
-        case 'enum':
-          record[fieldName] = generateEnum(field);
-          break;
-
-        case 'llm':
-          record[fieldName] = await generateLLM(field, provider, record);
-          llmCallCount++;
-          break;
-
-        case 'derived':
-          record[fieldName] = generateDerived(field, record);
-          break;
+      // Call beforeRecord hook
+      if (options.hooks?.beforeRecord) {
+        await options.hooks.beforeRecord(i, context);
       }
-    }
 
-    data.push(record);
+      const record: Record<string, any> = {};
+
+      // Execute generation plan in order
+      for (const fieldName of plan.order) {
+        try {
+          const field = schema[fieldName];
+          context.generatedFields = { ...record };
+
+          // Call beforeField hook
+          if (options.hooks?.beforeField) {
+            await options.hooks.beforeField(fieldName, field, context);
+          }
+
+          let value: any;
+
+          // Generate field value
+          switch (field.type) {
+            case 'static':
+              value = field.value;
+              break;
+
+            case 'number':
+              value = generateNumber(field);
+              break;
+
+            case 'enum':
+              value = generateEnum(field);
+              break;
+
+            case 'llm':
+              const cacheBefore = cache.getStats();
+              value = await generateLLMWithRetry(
+                field,
+                provider,
+                record,
+                options.provider.model || 'default',
+                i, // Record index for cache variation
+                advanced.maxRetries ?? 0,
+                advanced.timeout,
+                options.batchSize !== undefined, // Use batching if batchSize specified
+                true // useCache
+              );
+              const cacheAfter = cache.getStats();
+              if (cacheAfter.totalHits > cacheBefore.totalHits) {
+                cacheHits++;
+              }
+              llmCallCount++;
+              break;
+
+            case 'derived':
+              value = generateDerived(field, record);
+              break;
+          }
+
+          // Call afterField hook
+          if (options.hooks?.afterField) {
+            value = await options.hooks.afterField(fieldName, value, field, context);
+          }
+
+          // Transform field if transformation provided
+          if (options.transformations?.transformField) {
+            value = await options.transformations.transformField(fieldName, value, record);
+          }
+
+          // Validate field if validation provided
+          if (options.validations?.validateField) {
+            try {
+              const isValid = await options.validations.validateField(fieldName, value, record);
+              if (isValid === false) {
+                throw new Error(`Field ${fieldName} failed validation`);
+              }
+            } catch (error) {
+              if (stopOnError) throw error;
+              if (options.hooks?.onError) {
+                await options.hooks.onError(error as Error, { ...context, fieldName });
+              }
+              if (!continueOnFieldError) {
+                throw error;
+              }
+              errors.push({
+                recordIndex: i,
+                fieldName,
+                error: error as Error,
+                timestamp: Date.now(),
+              });
+              continue;
+            }
+          }
+
+          record[fieldName] = value;
+        } catch (error) {
+          const err = error as Error;
+          if (stopOnError) throw err;
+          
+          if (options.hooks?.onError) {
+            await options.hooks.onError(err, { ...context, fieldName });
+          }
+          
+          if (advanced.errorHandler) {
+            try {
+              record[fieldName] = await advanced.errorHandler(err, { ...context, fieldName });
+            } catch {
+              if (!continueOnFieldError) throw err;
+              errors.push({
+                recordIndex: i,
+                fieldName,
+                error: err,
+                timestamp: Date.now(),
+              });
+            }
+          } else {
+            if (!continueOnFieldError) throw err;
+            errors.push({
+              recordIndex: i,
+              fieldName,
+              error: err,
+              timestamp: Date.now(),
+            });
+          }
+        }
+      }
+
+      // Transform record if transformation provided
+      let finalRecord = record;
+      if (options.transformations?.transformRecord) {
+        finalRecord = await options.transformations.transformRecord(record, i);
+      }
+
+      // Validate record if validation provided
+      if (options.validations?.validateRecord) {
+        try {
+          const isValid = await options.validations.validateRecord(finalRecord, i);
+          if (isValid === false) {
+            throw new Error(`Record ${i} failed validation`);
+          }
+        } catch (error) {
+          if (stopOnError) throw error;
+          if (options.hooks?.onError) {
+            await options.hooks.onError(error as Error, context);
+          }
+          filtered++;
+          continue;
+        }
+      }
+
+      // Filter record if filter provided
+      if (options.transformations?.filterRecord) {
+        const shouldInclude = await options.transformations.filterRecord(finalRecord, i);
+        if (!shouldInclude) {
+          filtered++;
+          continue;
+        }
+      }
+
+      // Call afterRecord hook
+      if (options.hooks?.afterRecord) {
+        finalRecord = await options.hooks.afterRecord(finalRecord, i, context);
+      }
+
+      data.push(finalRecord);
+
+      // Report progress
+      if (options.onProgress) {
+        options.onProgress(i + 1, options.count);
+      }
+    } catch (error) {
+      if (stopOnError) throw error;
+      
+      const err = error as Error;
+      if (options.hooks?.onError) {
+        await options.hooks.onError(err, {
+          schema,
+          generatedFields: {},
+          recordIndex: i,
+        });
+      }
+      
+      errors.push({
+        recordIndex: i,
+        error: err,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  // Flush any pending batches
+  if (options.batchSize !== undefined) {
+    await flushBatches(provider);
   }
 
   const duration = Date.now() - startTime;
+  
+  // Calculate cost estimate
+  const llmFields = plan.order.filter(name => schema[name].type === 'llm').length;
+  const costEstimate = estimateCost(
+    options.provider.name,
+    options.provider.model || 'default',
+    data.length,
+    llmFields
+  );
 
-  return {
+  const result: GenerationResult<T> = {
     data: data as Record<keyof T, any>[],
     stats: {
-      totalRecords: options.count,
+      totalRecords: data.length,
       llmCalls: llmCallCount,
       duration,
       provider: options.provider.name,
       model: options.provider.model || 'default',
+      errors: errors.length,
+      retries,
+      filtered,
+      cacheHits,
+      cacheHitRate: llmCallCount > 0 ? (cacheHits / llmCallCount) * 100 : 0,
+    },
+    errors: errors.length > 0 ? errors : undefined,
+    metadata: {
+      schema: Object.keys(schema),
+      startTime,
+      endTime: Date.now(),
+      options: {
+        count: options.count,
+        seed: options.seed,
+        provider: options.provider,
+      },
+      costEstimate,
     },
   };
+
+  // Call onComplete hook
+  if (options.hooks?.onComplete) {
+    await options.hooks.onComplete(result);
+  }
+
+  return result;
 }
 
 /**
@@ -195,12 +407,18 @@ function generateEnum(field: Field & { type: 'enum' }): string {
 }
 
 /**
- * Generate LLM value with optional coherence
+ * Generate LLM value with optional coherence and retry logic
  */
-async function generateLLM(
+async function generateLLMWithRetry(
   field: LLMField,
   provider: LLMProvider,
-  record: Record<string, any>
+  record: Record<string, any>,
+  model: string,
+  recordIndex: number,
+  maxRetries: number = 0,
+  timeout?: number,
+  useBatching: boolean = false,
+  useCache: boolean = true
 ): Promise<string> {
   // Build context from coherence fields
   let context: Record<string, any> | undefined;
@@ -214,7 +432,66 @@ async function generateLLM(
     }
   }
 
-  return await provider.generate(field.prompt, context);
+  // Add record index to context for cache variation (ensures unique values)
+  // Only add if no coherence context exists, or if we want to force variation
+  if (!context) {
+    context = { _recordIndex: recordIndex };
+  } else {
+    context._recordIndex = recordIndex;
+  }
+
+  // Try cache first
+  if (useCache) {
+    const cached = cache.get(provider.name, model, field.prompt, context);
+    if (cached) {
+      return cached;
+    }
+  }
+
+  let lastError: Error | undefined;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      let result: string;
+      
+      // Build prompt with variation instruction for better diversity
+      const variationPrompt = field.prompt.includes('different') || field.prompt.includes('unique')
+        ? field.prompt
+        : `${field.prompt}. Make it unique and different from previous generations.`;
+
+      if (useBatching) {
+        result = await generateWithBatching(provider, variationPrompt, context, field.prompt, true);
+      } else {
+        if (timeout) {
+          result = await Promise.race([
+            provider.generate(field.prompt, context),
+            new Promise<string>((_, reject) =>
+              setTimeout(() => reject(new Error(`Timeout after ${timeout}ms`)), timeout)
+            ),
+          ]);
+        } else {
+          result = await provider.generate(variationPrompt, context);
+        }
+      }
+
+      // Cache result (with record index in context for uniqueness)
+      if (useCache) {
+        cache.set(provider.name, model, field.prompt, result, context);
+      }
+
+      return result;
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt < maxRetries) {
+        // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 100));
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError || new Error('Failed to generate LLM value');
 }
 
 /**
