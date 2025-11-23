@@ -659,7 +659,7 @@ async function interactiveMode() {
     if (group.schema.startsWith('example:')) {
       schema = await loadExampleSchema(group.schema.split(':')[1]);
     } else if (group.schema === 'file') {
-      const file = Bun.file(group.schemaFile!);
+      const file = Bun.file(group.schemaFile as string);
       if (!(await file.exists())) {
         throw new Error(`File not found: ${group.schemaFile}`);
       }
@@ -675,7 +675,7 @@ async function interactiveMode() {
     }
 
     // Determine model
-    const modelName = group.model === 'custom' ? group.customModel! : 
+    const modelName = group.model === 'custom' ? (group.customModel as string) : 
                      group.model === 'development' ? 'llama3.2:3b' : 'qwen2.5:7b'; // Simplified for demo
 
     spinner.message('Checking Ollama connection...');
@@ -712,7 +712,7 @@ async function interactiveMode() {
     // Save output
     if (group.output !== 'stdout' && group.filename) {
         const content = formatOutput(result.data, group.output, { pretty: true });
-        await Bun.write(group.filename, content);
+        await Bun.write(group.filename as string, content);
         clack.log.success(pc.green(`Saved to ${group.filename}`));
     } else {
         console.log(formatOutput(result.data, 'json', { pretty: true }));
@@ -754,11 +754,11 @@ async function runSchemaWizard(): Promise<Schema> {
     // Construct a simple schema from one field for now
     const schemaObj: any = {};
     if (fields.fieldType === 'llm') {
-        schemaObj[fields.fieldName] = llm(fields.prompt!);
+        schemaObj[fields.fieldName as string] = llm(fields.prompt as string);
     } else if (fields.fieldType === 'number') {
-        schemaObj[fields.fieldName] = number(0, 100);
+        schemaObj[fields.fieldName as string] = number(0, 100);
     } else {
-        schemaObj[fields.fieldName] = staticValue('test');
+        schemaObj[fields.fieldName as string] = staticValue('test');
     }
     
     return defineSchema(schemaObj);
