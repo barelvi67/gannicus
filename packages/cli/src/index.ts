@@ -5,18 +5,29 @@
 
 import * as clack from '@clack/prompts';
 import { generate } from './commands/generate.ts';
+import { init } from './commands/init.ts';
 import { version } from '../package.json';
+import { GANNICUS_TITLE } from './utils/art.ts';
 
 const args = process.argv.slice(2);
 const command = args[0];
 
 async function main() {
-  clack.intro('🏛️  Gannicus - Synthetic Data Generation');
+  console.log(GANNICUS_TITLE);
+  clack.intro(`v${version}`);
 
   switch (command) {
     case 'generate':
     case 'gen':
       await generate(args.slice(1));
+      break;
+
+    case 'init':
+      await init();
+      break;
+
+    case 'init':
+      await init();
       break;
 
     case 'version':

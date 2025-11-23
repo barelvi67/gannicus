@@ -4,9 +4,11 @@
  */
 
 import * as clack from '@clack/prompts';
+import pc from 'picocolors';
 import { OllamaProvider } from 'gannicus';
 import { getModelForUseCase, getModelById } from 'gannicus';
 import type { Schema, GenerateOptions as CoreGenerateOptions } from 'gannicus';
+import { GANNICUS_TITLE } from '../utils/art.ts';
 
 interface GenerateCLIOptions {
   // Schema input
@@ -445,6 +447,10 @@ async function programmaticMode(options: GenerateCLIOptions) {
     // Emit start event
     emitEvent('start', { count, format, options }, options);
 
+    if (!quiet && !events) {
+      console.log(pc.cyan('🚀 Starting generation...'));
+    }
+
     // Load schema
     const schema = await loadSchema(options);
     emitEvent('schema_loaded', { fields: Object.keys(schema), fieldCount: Object.keys(schema).length }, options);
@@ -531,7 +537,14 @@ async function programmaticMode(options: GenerateCLIOptions) {
     }, options);
 
     if (!quiet && !events) {
-      console.error(`\nStats: ${result.stats.llmCalls} LLM calls | ${duration}ms | ${result.stats.provider} (${result.stats.model})`);
+      const timeStr = duration > 1000 ? `${(duration / 1000).toFixed(2)}s` : `${duration}ms`;
+      console.error(
+        `\n${pc.green('✔ Done!')} ${pc.dim('|')} ` +
+        `${pc.bold(result.stats.totalRecords.toString())} records ${pc.dim('|')} ` +
+        `${pc.yellow(result.stats.llmCalls.toString())} LLM calls ${pc.dim('|')} ` +
+        `${timeStr} ${pc.dim('|')} ` +
+        `${pc.blue(result.stats.provider)}/${pc.magenta(result.stats.model)}`
+      );
     }
 
     process.exit(0);
@@ -555,33 +568,14 @@ async function programmaticMode(options: GenerateCLIOptions) {
   }
 }
 
-/**
- * Interactive mode - User-friendly CLI
- */
 async function interactiveMode() {
-  const spinner = clack.spinner();
+  // Title is already shown in main index.ts for top-level calls, 
+  // but if called directly or needed context, clack.intro is good.
+  // We'll keep clack intro simple here.
+  clack.intro(pc.cyan('⚡ Generator Mode'));
 
-  try {
-    spinner.start('Checking Ollama...');
-    const provider = new OllamaProvider();
-    const health = await provider.healthCheck();
-
-    if (!health.ok) {
-      spinner.stop('Ollama check failed');
-      clack.log.error(health.message);
-      clack.note(
-        `To install Ollama:
-  1. Visit https://ollama.ai
-  2. Download and install
-  3. Run: ollama pull qwen2.5:7b`,
-        'Installation Guide'
-      );
-      process.exit(1);
-    }
-
-    spinner.stop('Ollama ready ✓');
-
-    const count = await clack.text({
+  const group = await clack.group({
+    count: () => clack.text({
       message: 'How many records to generate?',
       placeholder: '10',
       initialValue: '10',
@@ -590,88 +584,184 @@ async function interactiveMode() {
         if (isNaN(num) || num < 1) return 'Must be a positive number';
         if (num > 10000) return 'Maximum 10000 records';
       },
-    });
-
-    if (clack.isCancel(count)) {
-      clack.cancel('Generation cancelled');
-      process.exit(0);
-    }
-
-    const recordCount = parseInt(count);
-
-    const schemaChoice = await clack.select({
-      message: 'Choose an example schema:',
+    }),
+    schema: () => clack.select({
+      message: 'Choose a schema source:',
       options: [
-        { value: 'user', label: 'User Profile (name, email, age)' },
-        { value: 'company', label: 'Tech Company (name, industry, size)' },
-        { value: 'product', label: 'Product (name, description, price)' },
+        { value: 'example:user', label: 'Example: User Profile' },
+        { value: 'example:company', label: 'Example: Tech Company' },
+        { value: 'example:product', label: 'Example: Product' },
+        { value: 'file', label: 'Load from file...' },
+        { value: 'wizard', label: 'Create new schema (Wizard)' },
       ],
-    });
-
-    if (clack.isCancel(schemaChoice)) {
-      clack.cancel('Generation cancelled');
+    }),
+    schemaFile: ({ results }) => {
+      if (results.schema === 'file') {
+        return clack.text({
+          message: 'Path to schema file:',
+          placeholder: 'gannicus.schema.ts',
+          validate: (value) => {
+            if (!value) return 'Path is required';
+          },
+        });
+      }
+    },
+    model: () => clack.select({
+      message: 'Select model strategy:',
+      options: [
+        { value: 'development', label: 'Development (Fastest, cached)', hint: 'llama3.2:3b' },
+        { value: 'production', label: 'Production (Best quality)', hint: 'qwen2.5:7b' },
+        { value: 'custom', label: 'Custom model...' },
+      ],
+    }),
+    customModel: ({ results }) => {
+      if (results.model === 'custom') {
+        return clack.text({
+          message: 'Enter model name:',
+          placeholder: 'llama3:latest',
+          validate: (value) => {
+            if (!value) return 'Model name is required';
+          },
+        });
+      }
+    },
+    output: () => clack.select({
+      message: 'Output format:',
+      options: [
+        { value: 'json', label: 'JSON' },
+        { value: 'csv', label: 'CSV' },
+        { value: 'ndjson', label: 'NDJSON' },
+        { value: 'stdout', label: 'Print to console' },
+      ],
+    }),
+    filename: ({ results }) => {
+      if (results.output !== 'stdout') {
+        return clack.text({
+          message: 'Output filename:',
+          placeholder: `output.${results.output}`,
+          initialValue: `output.${results.output}`,
+        });
+      }
+    },
+  }, {
+    onCancel: () => {
+      clack.cancel('Operation cancelled');
       process.exit(0);
+    },
+  });
+
+  const spinner = clack.spinner();
+  spinner.start('Preparing generation...');
+
+  try {
+    // Load schema based on choice
+    let schema: Schema;
+    if (group.schema.startsWith('example:')) {
+      schema = await loadExampleSchema(group.schema.split(':')[1]);
+    } else if (group.schema === 'file') {
+      const file = Bun.file(group.schemaFile!);
+      if (!(await file.exists())) {
+        throw new Error(`File not found: ${group.schemaFile}`);
+      }
+      // Dynamic import of schema file not supported in this simple implementation
+      // We'll assume it's a JSON file for now, or basic TS evaluation
+      // For full support we need a proper loader
+      schema = await file.json(); 
+    } else if (group.schema === 'wizard') {
+        // TODO: Implement wizard
+        schema = await runSchemaWizard();
+    } else {
+        throw new Error('Invalid schema selection');
     }
 
-    const schema = await loadExampleSchema(schemaChoice as string);
-    spinner.start(`Generating ${recordCount} records...`);
+    // Determine model
+    const modelName = group.model === 'custom' ? group.customModel! : 
+                     group.model === 'development' ? 'llama3.2:3b' : 'qwen2.5:7b'; // Simplified for demo
 
+    spinner.message('Checking Ollama connection...');
+    const provider = new OllamaProvider({ model: modelName });
+    const health = await provider.healthCheck();
+    
+    if (!health.ok) {
+        spinner.stop('Ollama check failed');
+        clack.log.error(health.message);
+        process.exit(1);
+    }
+
+    spinner.message(`Generating ${group.count} records...`);
+    
     const { generate: generateData } = await import('gannicus');
     const startTime = Date.now();
     let lastProgress = 0;
 
     const result = await generateData(schema, {
-      count: recordCount,
-      provider: { name: 'ollama', model: 'qwen2.5:7b' },
+      count: parseInt(group.count),
+      provider: { name: 'ollama', model: modelName },
       onProgress: (current, total) => {
         const progress = Math.floor((current / total) * 100);
-        if (progress > lastProgress + 10) {
-          spinner.message(`Generating ${recordCount} records... ${progress}%`);
+        if (progress > lastProgress + 5) {
+          spinner.message(`Generating... ${progress}% (${current}/${total})`);
           lastProgress = progress;
         }
       },
     });
 
     const duration = Date.now() - startTime;
-    spinner.stop(`Generated ${recordCount} records in ${(duration / 1000).toFixed(1)}s ✓`);
+    spinner.stop(`Generated ${group.count} records in ${(duration / 1000).toFixed(2)}s`);
 
-    clack.note(
-      JSON.stringify(result.data.slice(0, 3), null, 2) +
-        (result.data.length > 3 ? '\n... and more' : ''),
-      'Sample Output'
-    );
-
-    clack.log.success(
-      `Stats: ${result.stats.llmCalls} LLM calls | ${result.stats.provider} (${result.stats.model})`
-    );
-
-    const shouldSave = await clack.confirm({
-      message: 'Save to file?',
-    });
-
-    if (clack.isCancel(shouldSave)) {
-      return;
+    // Save output
+    if (group.output !== 'stdout' && group.filename) {
+        const content = formatOutput(result.data, group.output, { pretty: true });
+        await Bun.write(group.filename, content);
+        clack.log.success(pc.green(`Saved to ${group.filename}`));
+    } else {
+        console.log(formatOutput(result.data, 'json', { pretty: true }));
     }
 
-    if (shouldSave) {
-      const filename = await clack.text({
-        message: 'Filename:',
-        placeholder: 'output.json',
-        initialValue: 'output.json',
-      });
+    clack.outro(pc.cyan('✨ Generation complete!'));
 
-      if (!clack.isCancel(filename)) {
-        await Bun.write(filename, JSON.stringify(result.data, null, 2));
-        clack.log.success(`Saved to ${filename}`);
-      }
-    }
   } catch (error) {
     spinner.stop('Generation failed');
-    if (error instanceof Error) {
-      clack.log.error(error.message);
-    }
+    clack.log.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
+}
+
+async function runSchemaWizard(): Promise<Schema> {
+    clack.log.info(pc.blue('🧙 Schema Wizard'));
+    
+    // Very basic wizard implementation placeholder
+    // In a real version, this would loop to add fields
+    const fields = await clack.group({
+        fieldName: () => clack.text({ message: 'Field name:' }),
+        fieldType: () => clack.select({
+            message: 'Field type:',
+            options: [
+                { value: 'llm', label: 'LLM Generated' },
+                { value: 'number', label: 'Number' },
+                { value: 'static', label: 'Static Value' }
+            ]
+        }),
+        prompt: ({ results }) => {
+            if (results.fieldType === 'llm') {
+                return clack.text({ message: 'Prompt (what to generate):' });
+            }
+        }
+    });
+    
+    const { defineSchema, llm, number, staticValue } = await import('gannicus');
+    
+    // Construct a simple schema from one field for now
+    const schemaObj: any = {};
+    if (fields.fieldType === 'llm') {
+        schemaObj[fields.fieldName] = llm(fields.prompt!);
+    } else if (fields.fieldType === 'number') {
+        schemaObj[fields.fieldName] = number(0, 100);
+    } else {
+        schemaObj[fields.fieldName] = staticValue('test');
+    }
+    
+    return defineSchema(schemaObj);
 }
 
 /**
