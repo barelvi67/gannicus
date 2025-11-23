@@ -1,30 +1,78 @@
 # 🏛️ Gannicus
 
-**LLM-powered synthetic data generation for TypeScript**
+> LLM-powered synthetic data generation for TypeScript | Generate realistic, coherent synthetic data with AI
 
-Gannicus is a modern library for generating realistic synthetic data using Large Language Models. Built with Bun for maximum performance, it combines the power of LLMs with strong typing, intelligent caching, batching, and a declarative API.
+**Gannicus** is a modern library for generating realistic synthetic data using Large Language Models. Built with Bun for maximum performance, it combines the power of LLMs with strong typing, intelligent caching, batching, and a declarative API.
 
-> **Status:** v0.2 - Production-ready with intelligent caching, batching, and model recommendations
-> **Test Coverage:** 85.89% lines | 91.67% functions
+[![npm version](https://img.shields.io/npm/v/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![npm downloads](https://img.shields.io/npm/dm/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![License](https://img.shields.io/npm/l/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![Bun](https://img.shields.io/badge/bun-1.3+-orange.svg)](https://bun.sh) [![Status](https://img.shields.io/badge/status-stable-green.svg)](./CHANGELOG.md) [![CI/CD](https://github.com/Arakiss/gannicus/actions/workflows/release.yml/badge.svg)](https://github.com/Arakiss/gannicus/actions/workflows/release.yml) [![GitHub stars](https://img.shields.io/github/stars/Arakiss/gannicus)](https://github.com/Arakiss/gannicus) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blue.svg)](https://www.typescriptlang.org/) [![Test Coverage](https://img.shields.io/badge/coverage-85.89%25-brightgreen.svg)](./packages/core)
 
-## Why Gannicus?
+> **✨ Stable Release**: Gannicus v0.2 is production-ready with intelligent caching, batching, and model recommendations. See [CHANGELOG](./CHANGELOG.md) for latest updates.
 
-Faker is outdated. It generates predictable, context-free data from finite lists. LLMs can create data that looks genuinely human: with logical coherence, natural variation, and contextual nuance.
+## ✨ Features
 
-**Gannicus bridges this gap:**
-- ✅ LLM-powered generation with coherence between fields
-- ✅ Intelligent caching (5-10x faster on repeated runs)
-- ✅ Real batching for efficient LLM calls
-- ✅ Model recommendations system (auto-selects best model)
-- ✅ Cost calculator for cloud providers
-- ✅ Fast development mode for rapid iteration
-- ✅ Strong TypeScript typing
-- ✅ Multiple providers (Ollama, Groq, OpenAI, Anthropic - roadmap)
-- ✅ Declarative schema API - no manual prompt engineering
-- ✅ Bun-native for superior performance
-- ✅ Zero-cost local generation with Ollama
+### Core Architecture
 
-## Quick Start
+- 🤖 **LLM-Powered Generation** - Generate realistic, coherent data using Large Language Models
+- 🎯 **Declarative Schema API** - No manual prompt engineering required
+- 🔒 **Type-Safe by Default** - Strong TypeScript typing throughout
+- ⚡ **Bun-Native** - Leverages Bun 1.3+ for superior performance
+- 🏗️ **Monorepo Architecture** - Clean separation between core library and CLI
+
+### Field Types
+
+- 📝 **LLM Field** - AI-generated values with examples and coherence
+- 🔢 **Number Field** - Random numbers with range and decimal precision
+- 📋 **Enum Field** - Random selection with optional weighted distribution
+- 🔗 **Derived Field** - Computed from other fields using TypeScript functions
+- 📌 **Static Field** - Fixed values for constants
+
+### Coherence System
+
+- 🧠 **Automatic Context Injection** - Fields automatically receive context from related fields
+- 🔄 **Bidirectional Coherence** - Declare relationships between any fields
+- 🎨 **Natural Variation** - Each generation is unique while maintaining coherence
+- 📊 **Smart Prompting** - Context-aware prompts for realistic data
+
+### Performance & Optimization
+
+- ⚡ **Intelligent Caching** - 5-10x faster on repeated runs with hash-based caching
+- 📦 **Real Batching** - Group similar LLM requests to reduce API calls (5-10x reduction)
+- 🚀 **Fast Development Mode** - Optimized mode using fastest models + aggressive caching
+- 💰 **Cost Calculator** - Estimate costs before generating large datasets
+- 📈 **Cache Statistics** - Track cache hits, hit rates, and performance metrics
+
+### Model Management
+
+- 🎯 **Model Recommendations** - Auto-selects best model based on use case
+- 📊 **Benchmarked Models** - All recommended models have 100% success rate
+- 🔧 **Multiple Use Cases** - Development (speed), Production (quality), Quality (best), Speed (fastest)
+- 📝 **Rich Metadata** - Detailed model information (RAM, benchmarks, strengths, limitations)
+
+### Provider Support
+
+- 🏠 **Ollama** - Zero-cost local generation (v0.2)
+- ☁️ **Groq** - Ultra-fast cloud generation (v0.3 - coming soon)
+- 🌐 **OpenAI** - GPT models (v0.3 - coming soon)
+- 🤖 **Anthropic** - Claude models (v0.3 - coming soon)
+
+### Developer Experience
+
+- 🎨 **Beautiful CLI** - Highly configurable CLI with extensive options
+- 🔌 **Programmatic API** - Full control with hooks, transformations, and validations
+- 📚 **Comprehensive Examples** - Usage examples for common scenarios
+- 🧪 **Benchmarks** - Compare Gannicus with Faker (quality, speed, cost)
+- 📖 **Complete Documentation** - Value proposition, scalability, model recommendations
+
+### Advanced Features
+
+- 🎣 **Generation Hooks** - `onStart`, `beforeRecord`, `afterRecord`, `onComplete`, `onError`
+- 🔄 **Transformations** - Transform records and fields during generation
+- ✅ **Validations** - Validate records and fields with custom logic
+- 🔁 **Retry Logic** - Automatic retries with configurable limits
+- ⏱️ **Timeout Handling** - Configurable timeouts for LLM requests
+- 📊 **Metadata & Statistics** - Detailed generation stats and cost estimates
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -155,210 +203,159 @@ const result2 = await generateFast(userSchema, {
 });
 ```
 
-## Features
+## 🎯 Commands
 
-### Field Types
+### `gannicus generate` (or `gannicus g`)
 
-**LLM Field** - AI-generated values:
-```typescript
-llm('A creative tech company name', {
-  examples: ['Vercel', 'Stripe', 'Linear'],
-  coherence: ['industry'] // Make it coherent with industry field
-})
+Generate synthetic data from a schema definition.
+
+```bash
+# Interactive mode
+gannicus generate
+
+# Alias: gannicus g
+gannicus g
 ```
 
-**Static Field** - Fixed values:
-```typescript
-staticValue('active')
-staticValue({ plan: 'free', tier: 1 })
+**Schema Input Options:**
+
+- `--schema <json>` - Inline JSON schema
+- `--schema-file <path>` - Path to TypeScript/JSON schema file
+- `--schema-stdin` - Read schema from stdin
+
+**Model Selection:**
+
+- `--model <id>` - Use specific model (e.g., `llama3.2:3b`)
+- `--use-case <case>` - Auto-select model by use case (`development`, `production`, `quality`, `speed`)
+- `--temperature <number>` - Override model temperature (0.0-2.0)
+- `--base-url <url>` - Ollama base URL (default: `http://localhost:11434`)
+
+**Output Formatting:**
+
+- `--format <format>` - Output format (`json`, `csv`, `ndjson`)
+- `--pretty` - Pretty-print JSON output
+- `--indent <number>` - JSON indentation (default: 2)
+
+**Advanced Options:**
+
+- `--quiet` - Suppress progress output
+- `--verbose` - Show detailed logs
+- `--events` - Emit events as JSON (for programmatic consumption)
+- `--stream` - Stream results as they're generated
+- `--no-progress` - Disable progress bar
+- `--max-retries <number>` - Max retries per field (default: 3)
+- `--timeout <ms>` - Request timeout in milliseconds (default: 30000)
+- `--batch-size <number>` - Batch size for LLM requests (default: 1)
+- `--concurrency <number>` - Max concurrent requests (default: 1)
+- `--config <path>` - Path to config file
+
+**Examples:**
+
+```bash
+# Generate 100 users with development model
+gannicus generate --schema-file user-schema.ts --count 100 --use-case development
+
+# Generate with inline schema
+gannicus generate --schema '{"name": "llm(\"A name\")"}' --count 50
+
+# Production mode with batching
+gannicus generate --schema-file schema.ts --use-case production --batch-size 10 --count 1000
+
+# Stream results
+gannicus generate --schema-file schema.ts --stream --format ndjson
+
+# Use specific model
+gannicus generate --model qwen2.5:7b --schema-file schema.ts --count 200
 ```
 
-**Number Field** - Random numbers:
-```typescript
-number(18, 65) // Age between 18-65
-number(0, 100, { decimals: 2 }) // Percentage with 2 decimals
+## 📁 Project Structure
+
+### Monorepo Structure
+
+```
+gannicus/
+├── packages/
+│   ├── core/              # Core library (@gannicus/core)
+│   │   ├── src/
+│   │   │   ├── schema/         # Schema builders
+│   │   │   ├── providers/      # LLM providers (Ollama)
+│   │   │   ├── generator/      # Generation engine
+│   │   │   │   ├── index.ts         # Main generator
+│   │   │   │   ├── fast-mode.ts     # Fast dev mode
+│   │   │   │   └── batch-processor.ts # Batching
+│   │   │   ├── cache/          # Intelligent caching
+│   │   │   ├── cost/           # Cost calculator
+│   │   │   ├── models/         # Model recommendations
+│   │   │   └── types/          # TypeScript types
+│   │   └── package.json
+│   └── cli/               # CLI application (@gannicus/cli)
+│       ├── src/
+│       │   ├── commands/       # CLI commands
+│       │   └── index.ts
+│       └── package.json
+├── examples/              # Usage examples
+├── benchmarks/            # Performance benchmarks
+├── docs/                  # Documentation
+│   ├── VALUE-PROPOSITION.md
+│   ├── SCALABILITY.md
+│   └── FEATURES.md
+└── README.md
 ```
 
-**Enum Field** - Random selection with optional weights:
-```typescript
-enumField(['small', 'medium', 'large']) // Equal probability
+## 🛠️ Technology Stack
 
-enumField([
-  { value: 'free', weight: 70 },
-  { value: 'pro', weight: 25 },
-  { value: 'enterprise', weight: 5 }
-]) // Weighted distribution
-```
+| Category | Technology | Version |
+|----------|------------|---------|
+| Runtime | Bun | 1.3+ |
+| Language | TypeScript | 5.9+ |
+| LLM Provider | Ollama | Latest |
+| LLM Provider | Groq | v0.3 (coming soon) |
+| LLM Provider | OpenAI | v0.3 (coming soon) |
+| LLM Provider | Anthropic | v0.3 (coming soon) |
+| Caching | Hash-based LRU | Built-in |
+| Batching | Custom processor | Built-in |
 
-**Derived Field** - Computed from other fields:
-```typescript
-derived(['firstName', 'lastName'], (ctx) => {
-  return `${ctx.firstName} ${ctx.lastName}`
-})
-```
+## 💡 Philosophy
 
-### Coherence System
+**Gannicus** is built on these principles:
 
-The killer feature. When you declare coherence between fields, Gannicus automatically enriches prompts with context:
+1. **LLM-First** - Leverage the power of LLMs for realistic, coherent data generation
+2. **Type Safety** - Strong TypeScript typing throughout for better DX
+3. **Performance** - Intelligent caching and batching for speed
+4. **Developer Experience** - Declarative API, no manual prompt engineering
+5. **Zero-Cost Local** - Use Ollama for free local generation
+6. **Production-Ready** - Built for real-world use cases with proper error handling
 
-```typescript
-const companySchema = defineSchema({
-  name: llm('A tech startup name'),
-  industry: enumField(['SaaS', 'Fintech', 'AI']),
+## 🔄 Comparison
 
-  // This tagline will be coherent with name and industry
-  tagline: llm('A compelling one-line tagline', {
-    coherence: ['name', 'industry']
-  }),
-});
-```
+### Gannicus vs Faker
 
-The LLM receives context like:
-```
-Given the following context:
-name: Nebula Analytics
-industry: AI
+| Feature | Faker | Gannicus (Local) | Gannicus (Groq) |
+|---------|-------|------------------|-----------------|
+| Speed (rec/s) | 10,000+ | 3-30 (cached) | 50-100 |
+| Realism | 30/100 | 100/100 | 100/100 |
+| Coherence | 0% | 100% | 100% |
+| Uniqueness | 10% | 100% | 100% |
+| Variation | 20% | 100% | 100% |
+| Cost (10K) | $0.00 | $0.00 | $0.01 |
+| Cost (100K) | $0.00 | $0.00 | $0.14 |
 
-Generate: A compelling one-line tagline
-```
+**When to use Gannicus:**
+- ✅ Development/testing (100-10K records)
+- ✅ Production seeds (1K-100K records)
+- ✅ Quality-critical use cases
+- ✅ When coherence matters
+- ✅ When uniqueness and variation are important
 
-Result: Coherent, realistic data that makes sense together.
+**When to use Faker:**
+- ✅ Load testing (1M+ records)
+- ✅ Simple random data
+- ✅ Speed is everything
+- ✅ No coherence requirements
 
-### Intelligent Caching
+See [docs/VALUE-PROPOSITION.md](docs/VALUE-PROPOSITION.md) for detailed comparison.
 
-Gannicus includes a smart caching system that dramatically speeds up repeated generations:
-
-```typescript
-// First run: ~20 seconds
-const result1 = await generate(schema, { count: 100 });
-
-// Second run: ~3 seconds (5-10x faster!)
-const result2 = await generate(schema, { count: 100 });
-
-// Cache statistics
-import { getCacheStats } from '@gannicus/core';
-const stats = getCacheStats();
-console.log(stats); // { keys: 15, totalEntries: 45, totalHits: 85, hitRate: 85.0 }
-```
-
-**How it works:**
-- Caches by prompt + context (not just schema)
-- Append-only per key for natural variety
-- LRU eviction with configurable limits
-- Automatic cache hits tracked in stats
-
-### Batching
-
-Group similar LLM requests to reduce roundtrips:
-
-```typescript
-const result = await generate(schema, {
-  count: 1000,
-  batchSize: 10, // Group 10 similar requests
-});
-
-// Without batching: 1000 LLM calls
-// With batching: ~100-200 LLM calls (5-10x reduction)
-```
-
-### Model Recommendations
-
-Gannicus automatically selects the best model for your use case:
-
-```typescript
-// Development (fastest)
-provider: { name: 'ollama', useCase: 'development' }
-// → Uses llama3.2:3b (888ms avg, 2GB RAM)
-
-// Production (best quality)
-provider: { name: 'ollama', useCase: 'production' }
-// → Uses qwen2.5:7b (1441ms avg, 4.7GB RAM)
-
-// Or specify directly
-provider: { name: 'ollama', model: 'llama3.2:3b' }
-```
-
-**Recommended Models:**
-- **llama3.2:3b** - Fastest for development (100% success rate)
-- **qwen2.5:7b** - Best for production (100% success rate)
-- **llama3.1:8b** - Alternative production option
-
-All models are benchmarked and have 100% success rate on test cases.
-
-### Cost Calculator
-
-Estimate costs before generating large datasets:
-
-```typescript
-import { estimateCost, compareProviders } from '@gannicus/core';
-
-// Estimate for 10K records
-const estimate = estimateCost('groq', 'llama3.1:70b', 10000, 3, 50);
-console.log(estimate);
-// {
-//   cost: 0.01,
-//   totalTokens: 1500000,
-//   estimatedTime: 3000,
-//   recordsPerSecond: 3.33
-// }
-
-// Compare all providers
-const comparison = compareProviders(10000, 3, 50);
-comparison.forEach(est => {
-  console.log(`${est.provider}: $${est.cost.toFixed(4)} | ${est.estimatedTime}s`);
-});
-```
-
-### Programmatic API with Hooks
-
-Full control over the generation process:
-
-```typescript
-const result = await generate(schema, {
-  count: 100,
-  hooks: {
-    onStart: async (options) => {
-      console.log('Starting generation...');
-    },
-    beforeRecord: async (index, context) => {
-      // Modify context before generating record
-    },
-    afterRecord: async (record, index) => {
-      // Process each record after generation
-    },
-    onComplete: async (result) => {
-      console.log('Generation complete!');
-    },
-  },
-  transformations: {
-    transformRecord: (record) => {
-      // Transform each record
-      return { ...record, id: uuid() };
-    },
-    transformField: (fieldName, value) => {
-      // Transform individual fields
-      return value;
-    },
-  },
-  validations: {
-    validateRecord: (record) => {
-      // Custom validation
-      return record.age >= 18;
-    },
-    validateField: (fieldName, value) => {
-      // Field-level validation
-      return true;
-    },
-  },
-  advanced: {
-    maxRetries: 3,
-    timeout: 5000,
-    continueOnFieldError: true,
-  },
-});
-```
-
-## Performance
+## 📊 Performance
 
 ### Local (Ollama)
 
@@ -385,30 +382,49 @@ const result = await generate(schema, {
 - 100K records: ~30 minutes
 - Cost: ~$0.14 for 100K records
 
-### Comparison with Faker
+## 📝 Versioning & Releases
 
-| Metric | Faker | Gannicus (Local) | Gannicus (Groq) |
-|--------|-------|------------------|-----------------|
-| Speed (rec/s) | 10,000+ | 3-30 (cached) | 50-100 |
-| Realism | 30/100 | 100/100 | 100/100 |
-| Coherence | 0% | 100% | 100% |
-| Cost (10K) | $0.00 | $0.00 | $0.01 |
-| Cost (100K) | $0.00 | $0.00 | $0.14 |
+Gannicus uses [Changesets](https://github.com/changesets/changesets) for semantic versioning and changelog management.
 
-**When to use Gannicus:**
-- ✅ Development/testing (100-10K records)
-- ✅ Production seeds (1K-100K records)
-- ✅ Quality-critical use cases
-- ✅ When coherence matters
+### Recent Releases
 
-**When to use Faker:**
-- ✅ Load testing (1M+ records)
-- ✅ Simple random data
-- ✅ Speed is everything
+- **v0.2.1** (Current) - Fix error handling in OllamaProvider and update README with correct model recommendations
+- **v0.2.0** - Production-ready release with intelligent caching, batching, and model recommendations
+  - Intelligent caching system (5-10x speedup on repeated runs)
+  - Real batching for efficient LLM calls
+  - Model recommendations system with rich metadata
+  - Cost calculator for cloud providers
+  - Fast development mode for rapid iteration
+  - Enhanced CLI with extensive configuration options
+  - Programmatic API with hooks, transformations, and validations
+  - Comprehensive test suite (85.89% coverage)
+  - Benchmarks comparing Gannicus with Faker
 
-See [docs/VALUE-PROPOSITION.md](docs/VALUE-PROPOSITION.md) for detailed comparison.
+See [CHANGELOG](./CHANGELOG.md) for complete version history.
 
-## Examples
+### Roadmap
+
+**v0.3 - Scale (in progress)**
+- [ ] Groq provider (game-changer for speed)
+- [ ] OpenAI and Anthropic providers
+- [ ] Multi-entity relationships
+- [ ] Statistical distributions
+- [ ] Template library (e-commerce, SaaS, etc.)
+
+**v1.0 - Release (planned)**
+- [ ] 10+ templates
+- [ ] Complete documentation
+- [ ] Performance benchmarks
+- [ ] Community-ready
+
+## 📚 Documentation
+
+- [Value Proposition](docs/VALUE-PROPOSITION.md) - When to use Gannicus vs Faker
+- [Scalability](docs/SCALABILITY.md) - Performance analysis and optimizations
+- [Features](docs/FEATURES.md) - Complete feature documentation
+- [Model Recommendations](packages/core/src/models/README.md) - Choosing the right model
+
+## 🧪 Examples
 
 See `examples/` directory:
 
@@ -424,7 +440,7 @@ bun run examples/coherence-example.ts
 bun run examples/fast-development.ts
 ```
 
-## Benchmarks
+## 🏃 Benchmarks
 
 Compare Gannicus with Faker:
 
@@ -436,44 +452,7 @@ bun run benchmarks/quality-comparison.ts
 bun run benchmarks/faker-vs-gannicus.ts
 ```
 
-## Architecture
-
-Gannicus uses a layered architecture:
-
-1. **Schema Layer** - Declarative schema definition with strong typing
-2. **Planning Engine** - Analyzes dependencies and optimizes generation order
-3. **Provider Layer** - Unified interface for LLM providers with model recommendations
-4. **Cache Layer** - Intelligent caching by prompt + context
-5. **Batch Processor** - Groups similar LLM requests for efficiency
-6. **Generation Engine** - Orchestrates generation with hooks, transformations, validations
-7. **CLI Layer** - Highly configurable CLI for LLM integration
-
-## Roadmap
-
-### v0.2 - Production-ready ✅
-- [x] Intelligent caching system
-- [x] Real batching for LLM calls
-- [x] Model recommendations system
-- [x] Cost calculator
-- [x] Fast development mode
-- [x] Enhanced CLI with extensive options
-- [x] Programmatic API with hooks/transformations/validations
-- [x] Quality benchmarks vs Faker
-
-### v0.3 - Scale (in progress)
-- [ ] Groq provider (game-changer for speed)
-- [ ] OpenAI and Anthropic providers
-- [ ] Multi-entity relationships
-- [ ] Statistical distributions
-- [ ] Template library (e-commerce, SaaS, etc.)
-
-### v1.0 - Release (planned)
-- [ ] 10+ templates
-- [ ] Complete documentation
-- [ ] Performance benchmarks
-- [ ] Community-ready
-
-## Development
+## 🛠️ Development
 
 ```bash
 # Install dependencies
@@ -495,84 +474,28 @@ bun run build
 bun run benchmarks/quality-comparison.ts
 ```
 
-## Project Structure
+## 🤝 Contributing
 
-```
-gannicus/
-├── packages/
-│   ├── core/              # Core library
-│   │   ├── src/
-│   │   │   ├── schema/         # Schema builders
-│   │   │   ├── providers/      # LLM providers (Ollama)
-│   │   │   ├── generator/      # Generation engine
-│   │   │   │   ├── index.ts         # Main generator
-│   │   │   │   ├── fast-mode.ts     # Fast dev mode
-│   │   │   │   └── batch-processor.ts # Batching
-│   │   │   ├── cache/          # Intelligent caching
-│   │   │   ├── cost/           # Cost calculator
-│   │   │   ├── models/         # Model recommendations
-│   │   │   └── types/          # TypeScript types
-│   │   └── package.json
-│   └── cli/               # CLI application
-│       ├── src/
-│       │   ├── commands/       # CLI commands
-│       │   └── index.ts
-│       └── package.json
-├── examples/              # Usage examples
-├── benchmarks/            # Performance benchmarks
-├── docs/                  # Documentation
-│   ├── VALUE-PROPOSITION.md
-│   └── SCALABILITY.md
-└── README.md
-```
-
-## Documentation
-
-- [Value Proposition](docs/VALUE-PROPOSITION.md) - When to use Gannicus vs Faker
-- [Scalability](docs/SCALABILITY.md) - Performance analysis and optimizations
-- [Model Recommendations](packages/core/src/models/README.md) - Choosing the right model
-
-## Tech Stack
-
-- **Runtime:** Bun 1.3+ (native TypeScript, superior async performance)
-- **Language:** TypeScript 5.9+
-- **CLI:** Highly configurable with extensive options
-- **LLM Provider:** Ollama (v0.2), Groq/OpenAI/Anthropic (v0.3+)
-- **Caching:** Intelligent hash-based caching
-- **Batching:** Real batching for LLM efficiency
-
-## Why Bun?
-
-- ⚡ Native TypeScript execution - no compilation step
-- 🚀 Superior async performance for LLM batching
-- 📦 Built-in package manager and test runner
-- 🔥 Fast startup time for CLI
-- 💾 Native SQLite for future cache layer
-
-## Contributing
-
-Gannicus is in active development. Contributions welcome!
+Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 1. Fork the repo
 2. Create a feature branch
 3. Make your changes
 4. Submit a PR
 
-## License
+## 📄 License
 
-MIT
+MIT © [Arakiss](https://github.com/Arakiss)
 
-## Author
+## 🙏 Acknowledgments
 
-**Petru Arakiss**
-
-- GitHub: [@Arakiss](https://github.com/Arakiss)
-- Twitter: [@petruarakiss](https://twitter.com/petruarakiss)
-
-## Inspiration
-
-Named after Gannicus, the legendary gladiator known for his strength and skill. Like its namesake, this library aims to be powerful, efficient, and unmatched in its domain.
+- [Bun](https://bun.sh) - The amazing all-in-one JavaScript runtime
+- [Ollama](https://ollama.ai) - Local LLM inference made easy
+- [Faker](https://fakerjs.dev) - Inspiration for synthetic data generation
+- The open-source community for feedback and contributions
 
 ---
+
+**Made with ❤️ for the indie hacker community** | [GitHub](https://github.com/Arakiss/gannicus) | [Issues](https://github.com/Arakiss/gannicus/issues)
 
 **Built with Bun. Powered by LLMs. Made for developers.**
