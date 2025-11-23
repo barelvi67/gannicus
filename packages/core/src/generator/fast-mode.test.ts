@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'bun:test';
 import { generateFast, clearCache, getCacheStats } from './fast-mode.ts';
-import { defineSchema, llm, number, enumField } from '../../schema/index.ts';
-import type { LLMProvider } from '../../types/index.ts';
+import { defineSchema, llm, number, enumField } from '../schema/index.ts';
+import type { LLMProvider } from '../types/index.ts';
 
 class MockProvider implements LLMProvider {
   name = 'mock';
