@@ -5,7 +5,7 @@
 
 import * as clack from '@clack/prompts';
 import { OllamaProvider } from '@gannicus/core';
-import { getModelForUseCase, getModelById } from '@gannicus/core/models';
+import { getModelForUseCase, getModelById } from '@gannicus/core';
 import type { Schema, GenerateOptions as CoreGenerateOptions } from '@gannicus/core';
 
 interface GenerateCLIOptions {

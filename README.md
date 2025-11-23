@@ -41,10 +41,10 @@ brew install ollama
 # Start Ollama
 ollama serve
 
-# Pull recommended model (auto-selected by Gannicus)
-ollama pull llama3.2:3b  # Fastest for development
-# or
-ollama pull qwen2.5:7b   # Best for production
+# Pull recommended models (auto-selected by Gannicus)
+ollama pull llama3.2:3b  # Fastest for development (recommended)
+ollama pull qwen2.5:7b   # Best for production (recommended)
+ollama pull llama3.1:8b  # Alternative production option
 ```
 
 ### Installation

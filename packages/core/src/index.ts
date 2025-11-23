@@ -29,6 +29,19 @@ export type { CostEstimate } from './cost/index.ts';
 export { OllamaProvider, createOllamaProvider } from './providers/index.ts';
 export type { OllamaProviderConfig } from './providers/index.ts';
 
+// Model recommendations
+export {
+  getRecommendedModels,
+  getModelById,
+  getModelForUseCase,
+  getDefaultModel,
+  getModelsByUseCase,
+  getModelsByPriority,
+  isRecommended,
+  getRecommendations,
+} from './models/index.ts';
+export type { RecommendedModel, ModelSize, ModelPerformance, ModelTemperature } from './models/index.ts';
+
 // Types
 export type {
   FieldType,

@@ -11,6 +11,7 @@ import type {
   Field,
   LLMField,
   DerivedField,
+  GenerationContext,
 } from '../types/index.ts';
 import { validateSchema } from '../schema/index.ts';
 import { createOllamaProvider } from '../providers/index.ts';

@@ -44,8 +44,16 @@ export class OllamaProvider implements LLMProvider {
       recommendedModel = getDefaultModel();
     }
     
-    this.model = config.model || recommendedModel.id;
+    // Ensure we have a valid model
+    if (!config.model && !recommendedModel) {
+      throw new Error(
+        'No LLM model specified. Please provide a model in config or ensure a default model is configured.'
+      );
+    }
+
+    this.model = config.model || recommendedModel!.id;
     this.baseURL = config.baseURL || 'http://localhost:11434';
+    
     // For development, use higher temperature for more variation
     // For production, use recommended temperature for consistency
     const baseTemp = config.temperature ?? (recommendedModel?.temperature?.recommended ?? 0.7);

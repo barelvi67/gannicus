@@ -21,7 +21,7 @@ export interface ModelPerformance {
 
 export interface ModelTemperature {
   recommended: number;
-  range: [number, number];
+  range: number[] | [number, number];
 }
 
 export interface RecommendedModel {
