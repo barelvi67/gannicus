@@ -11,14 +11,14 @@
       },
     },
     "packages/cli": {
-      "name": "@gannicus/cli",
-      "version": "0.1.0",
+      "name": "gannicus-cli",
+      "version": "0.2.1",
       "bin": {
         "gannicus": "./dist/index.js",
       },
       "dependencies": {
         "@clack/prompts": "catalog:",
-        "@gannicus/core": "workspace:*",
+        "gannicus-core": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -26,8 +26,8 @@
       },
     },
     "packages/core": {
-      "name": "@gannicus/core",
-      "version": "0.1.0",
+      "name": "gannicus-core",
+      "version": "0.2.1",
       "dependencies": {
         "zod": "catalog:",
       },
@@ -90,10 +90,6 @@
 
     "@clack/prompts": ["@clack/prompts@0.8.2", "", { "dependencies": { "@clack/core": "0.3.5", "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-6b9Ab2UiZwJYA9iMyboYyW9yJvAO9V753ZhS+DHKEjZRKAxPPOb7MXXu84lsPFG+vZt6FRFniZ8rXi+zCIw4yQ=="],
 
-    "@gannicus/cli": ["@gannicus/cli@workspace:packages/cli"],
-
-    "@gannicus/core": ["@gannicus/core@workspace:packages/core"],
-
     "@inquirer/external-editor": ["@inquirer/external-editor@1.0.3", "", { "dependencies": { "chardet": "^2.1.1", "iconv-lite": "^0.7.0" }, "peerDependencies": { "@types/node": ">=18" }, "optionalPeers": ["@types/node"] }, "sha512-RWbSrDiYmO4LbejWY7ttpxczuwQyZLBUyygsA9Nsv95hpzUWwnNTVQmAq3xuh7vNwCp07UTmE5i11XAEExx4RA=="],
 
     "@manypkg/find-root": ["@manypkg/find-root@1.1.0", "", { "dependencies": { "@babel/runtime": "^7.5.5", "@types/node": "^12.7.1", "find-up": "^4.1.0", "fs-extra": "^8.1.0" } }, "sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA=="],
@@ -149,6 +145,10 @@
     "find-up": ["find-up@4.1.0", "", { "dependencies": { "locate-path": "^5.0.0", "path-exists": "^4.0.0" } }, "sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw=="],
 
     "fs-extra": ["fs-extra@7.0.1", "", { "dependencies": { "graceful-fs": "^4.1.2", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw=="],
+
+    "gannicus-cli": ["gannicus-cli@workspace:packages/cli"],
+
+    "gannicus-core": ["gannicus-core@workspace:packages/core"],
 
     "glob-parent": ["glob-parent@5.1.2", "", { "dependencies": { "is-glob": "^4.0.1" } }, "sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow=="],
 

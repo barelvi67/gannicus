@@ -9,7 +9,7 @@ Complete feature documentation for Gannicus.
 Declarative schema definition with strong TypeScript typing:
 
 ```typescript
-import { defineSchema, llm, number, enumField, derived } from '@gannicus/core';
+import { defineSchema, llm, number, enumField, derived } from 'gannicus-core';
 
 const schema = defineSchema({
   name: llm('A realistic full name'),
@@ -98,7 +98,7 @@ Smart caching system that dramatically speeds up repeated generations:
 - **Automatic cache hits** tracked in stats
 
 ```typescript
-import { getCacheStats, clearCache } from '@gannicus/core';
+import { getCacheStats, clearCache } from 'gannicus-core';
 
 // First run: ~20 seconds
 const result1 = await generate(schema, { count: 100 });
@@ -161,7 +161,7 @@ provider: { name: 'ollama', model: 'llama3.2:3b' }
 Estimate costs before generating large datasets:
 
 ```typescript
-import { estimateCost, compareProviders, formatCostEstimate } from '@gannicus/core';
+import { estimateCost, compareProviders, formatCostEstimate } from 'gannicus-core';
 
 // Estimate for 10K records
 const estimate = estimateCost('groq', 'llama3.1:70b', 10000, 3, 50);
@@ -191,7 +191,7 @@ comparison.forEach(est => {
 Optimized mode for rapid iteration:
 
 ```typescript
-import { generateFast } from '@gannicus/core';
+import { generateFast } from 'gannicus-core';
 
 // Uses fastest model + aggressive caching + batching
 const result = await generateFast(schema, {

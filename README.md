@@ -4,7 +4,7 @@
 
 **Gannicus** is a modern library for generating realistic synthetic data using Large Language Models. Built with Bun for maximum performance, it combines the power of LLMs with strong typing, intelligent caching, batching, and a declarative API.
 
-[![npm version](https://img.shields.io/npm/v/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![npm downloads](https://img.shields.io/npm/dm/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![License](https://img.shields.io/npm/l/@gannicus/core.svg)](https://www.npmjs.com/package/@gannicus/core) [![Bun](https://img.shields.io/badge/bun-1.3+-orange.svg)](https://bun.sh) [![Status](https://img.shields.io/badge/status-stable-green.svg)](./CHANGELOG.md) [![CI/CD](https://github.com/Arakiss/gannicus/actions/workflows/release.yml/badge.svg)](https://github.com/Arakiss/gannicus/actions/workflows/release.yml) [![GitHub stars](https://img.shields.io/github/stars/Arakiss/gannicus)](https://github.com/Arakiss/gannicus) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blue.svg)](https://www.typescriptlang.org/) [![Test Coverage](https://img.shields.io/badge/coverage-85.89%25-brightgreen.svg)](./packages/core)
+[![npm version](https://img.shields.io/npm/v/gannicus-core.svg)](https://www.npmjs.com/package/gannicus-core) [![npm downloads](https://img.shields.io/npm/dm/gannicus-core.svg)](https://www.npmjs.com/package/gannicus-core) [![License](https://img.shields.io/npm/l/gannicus-core.svg)](https://www.npmjs.com/package/gannicus-core) [![Bun](https://img.shields.io/badge/bun-1.3+-orange.svg)](https://bun.sh) [![Status](https://img.shields.io/badge/status-stable-green.svg)](./CHANGELOG.md) [![CI/CD](https://github.com/Arakiss/gannicus/actions/workflows/release.yml/badge.svg)](https://github.com/Arakiss/gannicus/actions/workflows/release.yml) [![GitHub stars](https://img.shields.io/github/stars/Arakiss/gannicus)](https://github.com/Arakiss/gannicus) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blue.svg)](https://www.typescriptlang.org/) [![Test Coverage](https://img.shields.io/badge/coverage-85.89%25-brightgreen.svg)](./packages/core)
 
 > **✨ Stable Release**: Gannicus v0.2 is production-ready with intelligent caching, batching, and model recommendations. See [CHANGELOG](./CHANGELOG.md) for latest updates.
 
@@ -99,14 +99,14 @@ ollama pull llama3.1:8b  # Alternative production option
 
 Gannicus is published as two separate packages:
 
-**1. Core Library** (`@gannicus/core`) - For programmatic use:
+**1. Core Library** (`gannicus-core`) - For programmatic use:
 ```bash
-bun add @gannicus/core
+bun add gannicus-core
 ```
 
-**2. CLI Tool** (`@gannicus/cli`) - For command-line usage:
+**2. CLI Tool** (`gannicus-cli`) - For command-line usage:
 ```bash
-bun install -g @gannicus/cli
+bun install -g gannicus-cli
 ```
 
 > **Note**: Both packages are published to npm. The CLI depends on the core library, so installing the CLI globally also gives you access to the core library functionality.
@@ -141,7 +141,7 @@ gannicus generate --help
 #### Basic Example
 
 ```typescript
-import { defineSchema, llm, number, enumField, derived, generate } from '@gannicus/core';
+import { defineSchema, llm, number, enumField, derived, generate } from 'gannicus-core';
 
 // Define your schema
 const userSchema = defineSchema({
@@ -193,7 +193,7 @@ const result = await generate(companySchema, {
 #### Fast Development Mode
 
 ```typescript
-import { generateFast } from '@gannicus/core';
+import { generateFast } from 'gannicus-core';
 
 // Uses fastest model + aggressive caching + batching
 const result = await generateFast(userSchema, {
@@ -281,7 +281,7 @@ gannicus generate --model qwen2.5:7b --schema-file schema.ts --count 200
 ```
 gannicus/
 ├── packages/
-│   ├── core/              # Core library (@gannicus/core)
+│   ├── core/              # Core library (gannicus-core)
 │   │   ├── src/
 │   │   │   ├── schema/         # Schema builders
 │   │   │   ├── providers/      # LLM providers (Ollama)
@@ -294,7 +294,7 @@ gannicus/
 │   │   │   ├── models/         # Model recommendations
 │   │   │   └── types/          # TypeScript types
 │   │   └── package.json
-│   └── cli/               # CLI application (@gannicus/cli)
+│   └── cli/               # CLI application (gannicus-cli)
 │       ├── src/
 │       │   ├── commands/       # CLI commands
 │       │   └── index.ts
@@ -392,10 +392,10 @@ See [docs/VALUE-PROPOSITION.md](docs/VALUE-PROPOSITION.md) for detailed comparis
 
 Gannicus is published as two npm packages:
 
-### `@gannicus/core`
+### `gannicus-core`
 The core library for programmatic use. Install it in your project:
 ```bash
-bun add @gannicus/core
+bun add gannicus-core
 ```
 
 **Use cases:**
@@ -403,14 +403,14 @@ bun add @gannicus/core
 - Integrating Gannicus into your own tools
 - Using the programmatic API with full control
 
-### `@gannicus/cli`
+### `gannicus-cli`
 The command-line interface. Install it globally or locally:
 ```bash
 # Global installation
-bun install -g @gannicus/cli
+bun install -g gannicus-cli
 
 # Local installation (in your project)
-bun add -d @gannicus/cli
+bun add -d gannicus-cli
 ```
 
 **Use cases:**
@@ -438,7 +438,7 @@ Gannicus uses [Changesets](https://github.com/changesets/changesets) for semanti
    - Creates a version bump PR
 
 3. **Publish**: When the version bump PR is merged:
-   - Both `@gannicus/core` and `@gannicus/cli` are published to npm
+   - Both `gannicus-core` and `gannicus-cli` are published to npm
    - A GitHub Release is created automatically
    - All packages are versioned together
 

@@ -1,5 +1,5 @@
 /**
- * @gannicus/core
+ * gannicus-core
  * LLM-powered synthetic data generation for TypeScript
  */
 

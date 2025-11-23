@@ -1,5 +1,5 @@
 {
-  "name": "@gannicus/cli",
+  "name": "gannicus-cli",
   "version": "0.2.1",
   "description": "CLI for Gannicus synthetic data generation",
   "type": "module",
@@ -23,7 +23,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@gannicus/core": "workspace:*",
+    "gannicus-core": "workspace:*",
     "@clack/prompts": "catalog:"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-# @gannicus/core
+# gannicus-core
 
 ## 0.2.1
 
