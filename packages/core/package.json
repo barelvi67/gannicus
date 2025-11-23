@@ -52,6 +52,9 @@
   ],
   "author": "Petru Arakiss",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },

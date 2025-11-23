@@ -42,5 +42,8 @@
     "bun"
   ],
   "author": "Petru Arakiss",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
