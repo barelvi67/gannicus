@@ -1,16 +1,25 @@
 /**
  * Ollama provider for local LLM inference
- * Default provider for development with Phi-3 Mini 3.8B
+ * Uses recommended models configuration for optimal performance
+ * Default model: qwen2.5:7b (best for production/Faker replacement)
  */
 
 import type { LLMProvider, ProviderConfig } from '../types/index.ts';
+import { getDefaultModel, getModelById, getModelForUseCase, type RecommendedModel } from '../models/index.ts';
 
 export interface OllamaProviderConfig {
-  model?: string; // Default: phi3:mini
+  /** Model name (e.g., 'qwen2.5:7b'). If not provided, uses recommended default */
+  model?: string;
+  /** Ollama server URL */
   baseURL?: string; // Default: http://localhost:11434
-  temperature?: number; // Default: 0.7
+  /** Temperature for generation. If not provided, uses recommended value for the model */
+  temperature?: number;
+  /** Enable streaming responses */
   stream?: boolean; // Default: false
-  options?: Record<string, any>; // Additional options
+  /** Additional Ollama API options */
+  options?: Record<string, any>;
+  /** Auto-select model by use case: 'development' (fastest), 'production' (best quality), 'fastest', 'bestQuality' */
+  useCase?: 'development' | 'production' | 'fastest' | 'bestQuality';
 }
 
 /**
@@ -24,9 +33,25 @@ export class OllamaProvider implements LLMProvider {
   private temperature: number;
 
   constructor(config: OllamaProviderConfig = {}) {
-    this.model = config.model || 'phi3:mini';
+    // Determine model and temperature from config or recommendations
+    let recommendedModel: RecommendedModel | undefined;
+    
+    if (config.useCase) {
+      recommendedModel = getModelForUseCase(config.useCase);
+    } else if (config.model) {
+      recommendedModel = getModelById(config.model);
+    } else {
+      recommendedModel = getDefaultModel();
+    }
+    
+    this.model = config.model || recommendedModel.id;
     this.baseURL = config.baseURL || 'http://localhost:11434';
-    this.temperature = config.temperature ?? 0.7;
+    // For development, use higher temperature for more variation
+    // For production, use recommended temperature for consistency
+    const baseTemp = config.temperature ?? (recommendedModel?.temperature?.recommended ?? 0.7);
+    this.temperature = config.useCase === 'development' 
+      ? Math.max(baseTemp, 0.5) // Minimum 0.5 for development (more variation)
+      : baseTemp;
   }
 
   /**
