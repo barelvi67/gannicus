@@ -32,7 +32,7 @@
     "changeset:version": "changeset version",
     "changeset:publish": "changeset publish",
     "version-packages": "changeset version",
-    "release": "bun run build && changeset publish"
+    "release": "bun run build && changeset publish --public"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
