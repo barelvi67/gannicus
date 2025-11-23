@@ -1,5 +1,11 @@
 # gannicus
 
+## 0.2.2
+
+### Patch Changes
+
+- 69c2251: fix(cli): resolve type mismatches in generate command and cleanup core logic
+
 ## 0.2.1
 
 ### Patch Changes
