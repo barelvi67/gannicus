@@ -1,0 +1,184 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-01",
+  "description": "Recommended LLM models for Gannicus - A modern Faker replacement powered by LLMs",
+  "models": [
+    {
+      "id": "llama3.2:3b",
+      "name": "Llama 3.2 3B",
+      "family": "llama",
+      "size": {
+        "parameters": "3B",
+        "diskSize": "2.0 GB",
+        "ramRequired": "~4-6 GB"
+      },
+      "performance": {
+        "benchmarkScore": 100,
+        "averageLatency": 888,
+        "successRate": 1.0,
+        "lastBenchmarkDate": "2025-12-01"
+      },
+      "useCases": [
+        "development",
+        "prototyping",
+        "rapid-iteration",
+        "testing"
+      ],
+      "recommendedFor": [
+        "Fast development cycles",
+        "Limited hardware resources",
+        "Low latency requirements",
+        "Quick prototyping"
+      ],
+      "strengths": [
+        "Fastest response time (888ms average)",
+        "Lowest memory footprint (2.0 GB)",
+        "100% success rate on all test cases",
+        "Excellent for rapid iteration",
+        "Perfect balance for development"
+      ],
+      "limitations": [
+        "Smaller context window compared to larger models",
+        "May have slightly less nuanced outputs for complex tasks"
+      ],
+      "temperature": {
+        "recommended": 0.1,
+        "range": [0.0, 0.3]
+      },
+      "status": "recommended",
+      "priority": 1
+    },
+    {
+      "id": "qwen2.5:7b",
+      "name": "Qwen 2.5 7B",
+      "family": "qwen",
+      "size": {
+        "parameters": "7B",
+        "diskSize": "4.7 GB",
+        "ramRequired": "~8-12 GB"
+      },
+      "performance": {
+        "benchmarkScore": 100,
+        "averageLatency": 1441,
+        "successRate": 1.0,
+        "lastBenchmarkDate": "2025-12-01"
+      },
+      "useCases": [
+        "production",
+        "data-generation",
+        "synthetic-data",
+        "quality-critical"
+      ],
+      "recommendedFor": [
+        "Production environments",
+        "High-quality synthetic data generation",
+        "Balanced quality/speed requirements",
+        "Faker replacement use cases"
+      ],
+      "strengths": [
+        "100% success rate on all test cases",
+        "Best speed/quality balance for production (1441ms)",
+        "Excellent JSON generation",
+        "Reliable format compliance",
+        "Optimal for synthetic data generation"
+      ],
+      "limitations": [
+        "Slightly slower than small models",
+        "Requires more memory than 3B models"
+      ],
+      "temperature": {
+        "recommended": 0.1,
+        "range": [0.0, 0.3]
+      },
+      "status": "recommended",
+      "priority": 2,
+      "isDefault": true
+    },
+    {
+      "id": "llama3.1:8b",
+      "name": "Llama 3.1 8B",
+      "family": "llama",
+      "size": {
+        "parameters": "8B",
+        "diskSize": "4.9 GB",
+        "ramRequired": "~8-12 GB"
+      },
+      "performance": {
+        "benchmarkScore": 100,
+        "averageLatency": 1530,
+        "successRate": 1.0,
+        "lastBenchmarkDate": "2025-12-01"
+      },
+      "useCases": [
+        "production",
+        "alternative",
+        "llama-preference"
+      ],
+      "recommendedFor": [
+        "Production environments (alternative to Qwen)",
+        "Users preferring Llama family models",
+        "When Qwen is unavailable"
+      ],
+      "strengths": [
+        "100% success rate on all test cases",
+        "Part of proven Llama family",
+        "Good production quality",
+        "Reliable performance"
+      ],
+      "limitations": [
+        "Slightly slower than qwen2.5:7b (1530ms vs 1441ms)",
+        "Similar performance to Qwen but marginally slower"
+      ],
+      "temperature": {
+        "recommended": 0.1,
+        "range": [0.0, 0.3]
+      },
+      "status": "recommended",
+      "priority": 3
+    }
+  ],
+  "recommendations": {
+    "default": "qwen2.5:7b",
+    "development": "llama3.2:3b",
+    "production": "qwen2.5:7b",
+    "fastest": "llama3.2:3b",
+    "bestQuality": "qwen2.5:7b"
+  },
+  "benchmark": {
+    "testCases": [
+      {
+        "id": "simple_entity",
+        "description": "Simple entity name generation",
+        "example": "Technology company name"
+      },
+      {
+        "id": "strict_format",
+        "description": "Strict format compliance (numbers only)",
+        "example": "Price between 10-50, number only"
+      },
+      {
+        "id": "complex_instruction",
+        "description": "Complex instruction following",
+        "example": "SQL error message without quotes"
+      },
+      {
+        "id": "json_object",
+        "description": "JSON object generation",
+        "example": "JSON object with specific structure"
+      }
+    ],
+    "criteria": {
+      "successRate": "Percentage of tests passed",
+      "latency": "Average response time in milliseconds",
+      "formatCompliance": "Ability to follow strict format requirements",
+      "jsonGeneration": "Quality of JSON output"
+    }
+  },
+  "notes": [
+    "All recommended models achieved 100% success rate in comprehensive benchmarks",
+    "Models are optimized for synthetic data generation (Faker replacement)",
+    "Temperature settings are optimized for deterministic, high-quality outputs",
+    "Regular benchmarks ensure recommendations stay current with model improvements"
+  ]
+}
+
