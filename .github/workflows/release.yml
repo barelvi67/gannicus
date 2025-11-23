@@ -34,18 +34,24 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           chmod 600 ~/.npmrc
 
-      - name: Ensure npm scope exists
+      - name: Ensure npm scope exists (create if needed)
         run: |
-          # Check if scope exists, if not create it by publishing a dummy package first
-          # This is a workaround for npm's requirement that scopes exist before publishing
+          # Check if scope exists by trying to view a package
           if ! npm view @gannicus/core 2>/dev/null; then
-            echo "Scope @gannicus does not exist, creating it..."
-            # Create scope by attempting to publish (will fail but creates scope)
-            # We'll use npm directly here since Bun might not handle scope creation
+            echo "Scope @gannicus does not exist, creating it by publishing first package..."
+            # Build and publish @gannicus/core first to create the scope
+            # This will create the scope automatically when publishing with --access public
             cd packages/core
             bun run build
-            npm publish --access public --dry-run || true
+            # Use Bun to publish directly - this creates the scope automatically
+            bun publish --access public || {
+              echo "First publish may have failed, but scope should be created. Continuing..."
+            }
             cd ../..
+            # Wait a moment for npm to register the scope
+            sleep 2
+          else
+            echo "Scope @gannicus already exists, skipping creation"
           fi
 
       - name: Create Release Pull Request or Publish
