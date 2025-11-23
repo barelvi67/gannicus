@@ -17,21 +17,36 @@ build/
 .env.local
 .env.production
 
-# IDE
+# IDE and editors
 .vscode/
 .idea/
+.cursor/
+.windsurf/
+.claude/
 *.swp
 *.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
+# Local development files
+*.local.*
+.tool-versions
+.devcontainer/
 
 # Testing
 coverage/
 *.log
 
-# Generated files
+# Generated and temporary files
 output.json
 *.sqlite
+*.tmp
+
+# Project notes
+NOTES.md
+TODO.md
+CLAUDE.md
+CURSOR.md
+
+# Local configuration
+.mcp.json
+*.local.json
