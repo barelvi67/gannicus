@@ -2,7 +2,7 @@
  * Basic usage example - Generate user profiles
  */
 
-import { defineSchema, llm, number, enumField, derived, generate } from 'gannicus-core';
+import { defineSchema, llm, number, enumField, derived, generate } from 'gannicus';
 
 // Define schema
 const userSchema = defineSchema({

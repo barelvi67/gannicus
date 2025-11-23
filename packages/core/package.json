@@ -1,5 +1,5 @@
 {
-  "name": "gannicus-core",
+  "name": "gannicus",
   "version": "0.2.1",
   "description": "Core library for LLM-powered synthetic data generation",
   "type": "module",

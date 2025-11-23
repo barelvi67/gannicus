@@ -62,7 +62,7 @@ TypeScript utilities for accessing model recommendations:
 ### Automatic Selection
 
 ```typescript
-import { OllamaProvider } from 'gannicus-core';
+import { OllamaProvider } from 'gannicus';
 
 // Uses default (qwen2.5:7b)
 const provider = new OllamaProvider();
@@ -75,7 +75,7 @@ const prodProvider = new OllamaProvider({ useCase: 'production' });
 ### Manual Selection
 
 ```typescript
-import { OllamaProvider } from 'gannicus-core';
+import { OllamaProvider } from 'gannicus';
 
 // Use specific model
 const provider = new OllamaProvider({ 
@@ -87,7 +87,7 @@ const provider = new OllamaProvider({
 ### Get Model Information
 
 ```typescript
-import { getModelById, getRecommendations } from 'gannicus-core/models';
+import { getModelById, getRecommendations } from 'gannicus/models';
 
 const model = getModelById('qwen2.5:7b');
 console.log(model.strengths);

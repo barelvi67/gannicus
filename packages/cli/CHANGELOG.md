@@ -12,4 +12,4 @@
   - Update README.md with correct model names (llama3.2:3b, qwen2.5:7b, llama3.1:8b)
 
 - Updated dependencies [de992f8]
-  - gannicus-core@0.2.1
+  - gannicus@0.2.1

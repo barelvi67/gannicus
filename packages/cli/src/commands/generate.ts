@@ -4,9 +4,9 @@
  */
 
 import * as clack from '@clack/prompts';
-import { OllamaProvider } from 'gannicus-core';
-import { getModelForUseCase, getModelById } from 'gannicus-core';
-import type { Schema, GenerateOptions as CoreGenerateOptions } from 'gannicus-core';
+import { OllamaProvider } from 'gannicus';
+import { getModelForUseCase, getModelById } from 'gannicus';
+import type { Schema, GenerateOptions as CoreGenerateOptions } from 'gannicus';
 
 interface GenerateCLIOptions {
   // Schema input
@@ -473,7 +473,7 @@ async function programmaticMode(options: GenerateCLIOptions) {
     emitEvent('health_check', { status: 'ok', model }, options);
 
     // Generate data
-    const { generate: generateData } = await import('gannicus-core');
+    const { generate: generateData } = await import('gannicus');
     const generatedRecords: any[] = [];
     const startTime = Date.now();
     let lastProgressPercent = 0;
@@ -616,7 +616,7 @@ async function interactiveMode() {
     const schema = await loadExampleSchema(schemaChoice as string);
     spinner.start(`Generating ${recordCount} records...`);
 
-    const { generate: generateData } = await import('gannicus-core');
+    const { generate: generateData } = await import('gannicus');
     const startTime = Date.now();
     let lastProgress = 0;
 
@@ -678,7 +678,7 @@ async function interactiveMode() {
  * Load example schema by name
  */
 async function loadExampleSchema(choice: string): Promise<Schema> {
-  const { defineSchema, llm, number, enumField, derived } = await import('gannicus-core');
+  const { defineSchema, llm, number, enumField, derived } = await import('gannicus');
 
   switch (choice) {
     case 'user':

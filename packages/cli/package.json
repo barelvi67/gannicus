@@ -23,7 +23,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "gannicus-core": "workspace:*",
+    "gannicus": "workspace:*",
     "@clack/prompts": "catalog:"
   },
   "devDependencies": {

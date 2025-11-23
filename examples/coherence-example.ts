@@ -2,7 +2,7 @@
  * Coherence example - Generate tech companies with related fields
  */
 
-import { defineSchema, llm, number, enumField, derived, generate } from 'gannicus-core';
+import { defineSchema, llm, number, enumField, derived, generate } from 'gannicus';
 
 const companySchema = defineSchema({
   name: llm('A creative tech startup name', {
