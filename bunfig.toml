@@ -12,7 +12,6 @@ auto = true
 [test]
 # Test configuration
 coverage = true
-preload = []
 
 [run]
 # Automatically install missing dependencies

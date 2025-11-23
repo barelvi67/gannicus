@@ -41,6 +41,13 @@ output.json
 *.sqlite
 *.tmp
 
+# Generated datasets (not committed)
+datasets/
+**/datasets/
+*.dataset.json
+*.dataset.csv
+*.dataset.ndjson
+
 # Project notes and strategy
 NOTES.md
 TODO.md
