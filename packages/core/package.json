@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/petruarakiss/gannicus.git",
+    "url": "https://github.com/Arakiss/gannicus.git",
     "directory": "packages/core"
   },
   "exports": {

@@ -24,5 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved Ollama provider with model recommendations
 - Updated documentation with new features
 
-[Unreleased]: https://github.com/petruarakiss/gannicus/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Arakiss/gannicus/compare/v0.2.0...HEAD
 
