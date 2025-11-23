@@ -1,5 +1,11 @@
 # @gannicus/cli
 
+## 0.3.0
+
+### Minor Changes
+
+- 6e6a8e8: feat: enhance CLI with beautiful ASCII art, new init command, and improved interactive generation UI
+
 ## 0.2.1
 
 ### Patch Changes
