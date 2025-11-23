@@ -1,10 +1,19 @@
 {
   "name": "@gannicus/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core library for LLM-powered synthetic data generation",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petruarakiss/gannicus.git",
+    "directory": "packages/core"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./schema": "./src/schema/index.ts",
@@ -13,10 +22,11 @@
     "./types": "./src/types/index.ts"
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc --emitDeclarationOnly --outDir dist",
     "dev": "bun --watch src/index.ts",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "zod": "catalog:"
