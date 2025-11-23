@@ -525,7 +525,7 @@ describe('Generator Engine', () => {
   });
 
   describe('generate() - Provider Validation', () => {
-    test('throws on unsupported provider in v0.1', async () => {
+    test('throws on unsupported provider', async () => {
       const schema = defineSchema({
         value: staticValue('test'),
       });
@@ -535,7 +535,7 @@ describe('Generator Engine', () => {
           count: 1,
           provider: { name: 'groq' as any },
         })
-      ).rejects.toThrow('Provider "groq" not supported in v0.1');
+      ).rejects.toThrow(/Provider "groq" not supported/);
     });
 
     test('uses default model when not specified', async () => {

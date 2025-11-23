@@ -97,7 +97,7 @@ export interface LLMProvider {
  * Provider configuration
  */
 export interface ProviderConfig {
-  name: 'ollama' | 'groq' | 'openai' | 'anthropic';
+  name: 'ollama' | 'sglang' | 'mlx' | 'vllm' | 'groq' | 'openai' | 'anthropic';
   model?: string;
   baseURL?: string;
   apiKey?: string;

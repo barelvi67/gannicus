@@ -14,7 +14,7 @@ import type {
   GenerationContext,
 } from '../types/index.ts';
 import { validateSchema } from '../schema/index.ts';
-import { createOllamaProvider } from '../providers/index.ts';
+import { createOllamaProvider, createSGLangProvider, createMLXProvider, createVLLMProvider } from '../providers/index.ts';
 import { cache } from '../cache/index.ts';
 import { generateWithBatching, flushBatches } from './batch-processor.ts';
 import { estimateCost } from '../cost/index.ts';
@@ -509,8 +509,14 @@ function createProvider(config: GenerateOptions['provider']): LLMProvider {
   switch (config.name) {
     case 'ollama':
       return createOllamaProvider(config);
+    case 'sglang':
+      return createSGLangProvider(config);
+    case 'mlx':
+      return createMLXProvider(config);
+    case 'vllm':
+      return createVLLMProvider(config);
     default:
-      throw new Error(`Provider "${config.name}" not supported in v0.1`);
+      throw new Error(`Provider "${config.name}" not supported. Supported providers: ollama, sglang, mlx, vllm`);
   }
 }
 

@@ -28,6 +28,12 @@ export type { CostEstimate } from './cost/index.ts';
 // Providers
 export { OllamaProvider, createOllamaProvider } from './providers/index.ts';
 export type { OllamaProviderConfig } from './providers/index.ts';
+export { SGLangProvider, createSGLangProvider } from './providers/index.ts';
+export type { SGLangProviderConfig } from './providers/index.ts';
+export { MLXProvider, createMLXProvider } from './providers/index.ts';
+export type { MLXProviderConfig } from './providers/index.ts';
+export { VLLMProvider, createVLLMProvider } from './providers/index.ts';
+export type { VLLMProviderConfig } from './providers/index.ts';
 
 // Model recommendations
 export {
@@ -64,3 +70,19 @@ export type {
   Validations,
   AdvancedOptions,
 } from './types/index.ts';
+
+// Hybrid generation types (v0.3+)
+export type {
+  SeedExpandOptions,
+  MutationRule,
+  TemplateFamily,
+  TemplateEvolutionOptions,
+  TenantSegment,
+  MultiTenantOptions,
+  SeasonalPattern,
+  EventSpike,
+  GrowthPattern,
+  TimeSeriesOptions,
+  CombinedStrategyOptions,
+  HybridGenerationResult,
+} from './types/hybrid.ts';

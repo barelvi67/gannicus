@@ -68,23 +68,33 @@ export class OllamaProvider implements LLMProvider {
   async generate(prompt: string, context?: Record<string, any>): Promise<string> {
     const fullPrompt = this.buildPrompt(prompt, context);
 
-    const response = await fetch(`${this.baseURL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: this.model,
-        prompt: fullPrompt,
-        stream: false,
-        options: {
-          temperature: this.temperature,
-          num_predict: 100, // Limit response length
-        },
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120s timeout (Ollama can be slow)
+
+    let response: Response;
+    try {
+      response = await fetch(`${this.baseURL}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.model,
+          prompt: fullPrompt,
+          stream: false,
+          options: {
+            temperature: this.temperature,
+            num_predict: 100, // Limit response length
+          },
+        }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Ollama API error: ${response.status} - ${error}`);
+      const error = await response.text().catch(() => 'Unknown error');
+      const errorMessage = error.length > 200 ? error.substring(0, 200) + '...' : error;
+      throw new Error(`Ollama API error: ${response.status} - ${errorMessage}`);
     }
 
     const data = (await response.json()) as { response: string };
