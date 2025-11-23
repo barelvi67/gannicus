@@ -97,13 +97,19 @@ ollama pull llama3.1:8b  # Alternative production option
 
 ### Installation
 
-```bash
-# Install CLI globally
-bun install -g @gannicus/cli
+Gannicus is published as two separate packages:
 
-# Or use in your project
+**1. Core Library** (`@gannicus/core`) - For programmatic use:
+```bash
 bun add @gannicus/core
 ```
+
+**2. CLI Tool** (`@gannicus/cli`) - For command-line usage:
+```bash
+bun install -g @gannicus/cli
+```
+
+> **Note**: Both packages are published to npm. The CLI depends on the core library, so installing the CLI globally also gives you access to the core library functionality.
 
 ### CLI Usage
 
@@ -382,9 +388,59 @@ See [docs/VALUE-PROPOSITION.md](docs/VALUE-PROPOSITION.md) for detailed comparis
 - 100K records: ~30 minutes
 - Cost: ~$0.14 for 100K records
 
+## 📦 Packages
+
+Gannicus is published as two npm packages:
+
+### `@gannicus/core`
+The core library for programmatic use. Install it in your project:
+```bash
+bun add @gannicus/core
+```
+
+**Use cases:**
+- Building applications that generate synthetic data
+- Integrating Gannicus into your own tools
+- Using the programmatic API with full control
+
+### `@gannicus/cli`
+The command-line interface. Install it globally or locally:
+```bash
+# Global installation
+bun install -g @gannicus/cli
+
+# Local installation (in your project)
+bun add -d @gannicus/cli
+```
+
+**Use cases:**
+- Quick data generation from terminal
+- CI/CD pipelines
+- One-off data generation tasks
+- LLM integration (the CLI is designed to be LLM-friendly)
+
+Both packages are versioned together and published automatically via CI/CD.
+
 ## 📝 Versioning & Releases
 
 Gannicus uses [Changesets](https://github.com/changesets/changesets) for semantic versioning and changelog management.
+
+### Release Process
+
+1. **Create Changeset**: Developers create changesets describing their changes
+   ```bash
+   bun run changeset
+   ```
+
+2. **Version Bump**: When changesets are merged, CI/CD automatically:
+   - Updates package versions based on changeset types (major/minor/patch)
+   - Updates CHANGELOG.md
+   - Creates a version bump PR
+
+3. **Publish**: When the version bump PR is merged:
+   - Both `@gannicus/core` and `@gannicus/cli` are published to npm
+   - A GitHub Release is created automatically
+   - All packages are versioned together
 
 ### Recent Releases
 
