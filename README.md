@@ -566,7 +566,7 @@ MIT
 
 **Petru Arakiss**
 
-- GitHub: [@petruarakiss](https://github.com/petruarakiss)
+- GitHub: [@Arakiss](https://github.com/Arakiss)
 - Twitter: [@petruarakiss](https://twitter.com/petruarakiss)
 
 ## Inspiration
