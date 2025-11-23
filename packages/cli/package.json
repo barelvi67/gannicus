@@ -1,0 +1,36 @@
+{
+  "name": "@gannicus/cli",
+  "version": "0.1.0",
+  "description": "CLI for Gannicus synthetic data generation",
+  "type": "module",
+  "bin": {
+    "gannicus": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --minify",
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gannicus/core": "workspace:*",
+    "@clack/prompts": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  },
+  "keywords": [
+    "cli",
+    "synthetic-data",
+    "data-generation",
+    "llm",
+    "ollama",
+    "test-data",
+    "faker-alternative",
+    "typescript",
+    "bun"
+  ],
+  "author": "Petru Arakiss",
+  "license": "MIT"
+}

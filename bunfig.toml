@@ -1,0 +1,19 @@
+[install]
+# Isolated installs are default in Bun 1.3
+# Only uncomment if you need to override
+# linker = "isolated"
+
+# Use Bun registry for faster installs
+registry = "https://registry.npmjs.org/"
+
+# Auto-install peer dependencies
+auto = true
+
+[test]
+# Test configuration
+coverage = true
+preload = []
+
+[run]
+# Automatically install missing dependencies
+install = true
