@@ -41,11 +41,12 @@ output.json
 *.sqlite
 *.tmp
 
-# Project notes
+# Project notes and strategy
 NOTES.md
 TODO.md
 CLAUDE.md
 CURSOR.md
+docs/drafts/
 
 # Local configuration
 .mcp.json
